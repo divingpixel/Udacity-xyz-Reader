@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
@@ -50,13 +51,12 @@ public class ArticleDetailFragment extends Fragment implements
 
     private Cursor mCursor;
     private long mItemId;
-    private View mRootView, metaBar;
-    private TextView bodyView, byLine, titleLine;
+    private View mRootView, overlay;
+    private TextView bodyView, byLine;
     private ImageView mPhotoView;
+    private Toolbar mToolbar;
     private CollapsingToolbarLayout collapsedToolbar;
-    private int mScrollY;
     private boolean mIsCard = false;
-    private int mStatusBarFullOpacityBottom;
 
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
@@ -92,10 +92,6 @@ public class ArticleDetailFragment extends Fragment implements
         setHasOptionsMenu(true);
     }
 
-    public ArticleDetailActivity getActivityCast() {
-        return (ArticleDetailActivity) getActivity();
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -123,30 +119,26 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
-        Toolbar mToolbar = (Toolbar)  mRootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+       mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         collapsedToolbar = (CollapsingToolbarLayout) mRootView.findViewById(R.id.appbar_layout);
         bodyView = (TextView) mRootView.findViewById(R.id.article_body);
-        metaBar = (View) mRootView.findViewById(R.id.meta_bar);
-        titleLine = (TextView) mRootView.findViewById(R.id.article_title);
         byLine = (TextView) mRootView.findViewById(R.id.article_byline);
+        overlay = mRootView.findViewById(R.id.image_overlay);
         collapsedToolbar.setTitle("loading ...");
         bodyView.setText("loading ...");
         return mRootView;
-    }
-
-    static float progress(float v, float min, float max) {
-        return constrain((v - min) / (max - min), 0, 1);
-    }
-
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
-        } else {
-            return val;
-        }
     }
 
     private Date parsePublishedDate() {
@@ -169,28 +161,26 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
-            collapsedToolbar.setTitle(" ");
+            collapsedToolbar.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
             collapsedToolbar.setCollapsedTitleTextColor(0xFFFFFFFF);
-            titleLine.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            collapsedToolbar.setExpandedTitleColor(0xFFFFFFFF);
 
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
                 byLine.setText(Html.fromHtml(
-                        DateUtils.getRelativeTimeSpanString(
+                        "<font color='#ffffff'>"
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                                + "</font> - " + DateUtils.getRelativeTimeSpanString(
                                 publishedDate.getTime(),
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                                 DateUtils.FORMAT_ABBREV_ALL).toString()
-                                + " by <font color='#ffffff'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
+                ));
 
             } else {
                 // If date is before 1902, just show the string
                 byLine.setText(Html.fromHtml(
-                        outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
-
+                        "<font color='#ffffff'>" + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                                + "</font> - " + outputFormat.format(publishedDate)));
             }
 
             String tempText = Html.fromHtml("<br />&emsp;" + mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n\r\n|\n\n)", "<br />&emsp;")).toString();
@@ -203,12 +193,12 @@ public class ArticleDetailFragment extends Fragment implements
                             if (bitmap != null) {
                                 Palette p = Palette.generate(bitmap, 12);
                                 int mMutedColor = p.getDarkVibrantColor(0xFF333333);
-                                int color = Color.argb(100,
+                                int color = Color.argb(128,
                                         (int) (Color.red(mMutedColor) * 0.9),
                                         (int) (Color.green(mMutedColor) * 0.9),
                                         (int) (Color.blue(mMutedColor) * 0.9));
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                metaBar.setBackgroundColor(color);
+                                overlay.setBackgroundColor(color);
                             }
                         }
 

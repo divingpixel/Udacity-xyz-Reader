@@ -2,25 +2,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
     xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true"
-
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
-        android:fitsSystemWindows="true"
+        android:layout_width="match_parent"
 
         android:layout_height="192dp"
-        android:layout_width="match_parent">
+        android:fitsSystemWindows="true"
+        app:expanded="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/appbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|exitUntilCollapsed"
 
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:layout_scrollInterpolator="@android:anim/decelerate_interpolator"
             app:toolbarId="@+id/toolbar">
 
@@ -34,10 +36,30 @@
                 android:src="@android:drawable/sym_def_app_icon"
                 app:srcCompat="@mipmap/ic_launcher" />
 
+            <FrameLayout
+                android:id="@+id/image_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/text_color">
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/article_byline"
+                style="?android:attr/textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/photo_background_protection"
+                android:padding="@dimen/detail_body_top_margin"
+                android:textColor="#8fff"
+                tools:text="@tools:sample/lorem" />
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"></android.support.v7.widget.Toolbar>
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -69,41 +91,5 @@
         android:src="@drawable/ic_share"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|end" />
-
-    <LinearLayout
-        android:id="@+id/meta_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginBottom="@dimen/detail_metabar_vert_padding"
-        android:background="#333"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/detail_inner_horiz_margin"
-        android:paddingTop="@dimen/detail_metabar_vert_padding"
-        android:paddingRight="@dimen/detail_inner_horiz_margin"
-        android:paddingBottom="@dimen/detail_metabar_vert_padding"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|end"
-        >
-
-        <TextView
-            android:id="@+id/article_title"
-            style="?android:attr/textAppearanceLarge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-condensed"
-            android:lineSpacingMultiplier="0.9"
-            android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
-            android:textColor="#fff"
-            android:textSize="@dimen/detail_title_text_size"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/article_byline"
-            style="?android:attr/textAppearanceSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#8fff" />
-    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
