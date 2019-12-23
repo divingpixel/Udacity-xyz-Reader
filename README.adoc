@@ -12,3 +12,7 @@ Your job will be to take the user feedback in the UI Review node, and implement 
 
 ## What I have done
 
+* Modified the color scheme and styles
+* Added a coordinator layout
+* Added an AppBar layout linked to the cooridinator layout
+* refactored the classes to work with the new layou and views
